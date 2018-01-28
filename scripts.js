@@ -68,7 +68,7 @@ $(function(){
 	}
 	
 	can.touchstart = function(e){
-		preventDefault();
+		e.preventDefault();
 		if(isDown){
 			return;
 		}
@@ -78,7 +78,7 @@ $(function(){
 	}
 
 	can.touchend = function(e){
-		preventDefault();
+		e.preventDefault();
 		if(!isDown){
 			return;
 		}
