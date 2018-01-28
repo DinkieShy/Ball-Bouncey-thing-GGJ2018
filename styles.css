@@ -1,0 +1,25 @@
+html{
+	padding:0;
+	margin:0;
+}
+
+body{
+	padding:0;
+	margin:0;
+}
+
+.canvas{
+	position:absolute;
+	border-style: solid;
+	border-color: black;
+	border-width: 2px;
+}
+
+#canvas2{
+	z-index:-1;
+}
+
+#start{
+	position:absolute;
+	right:5%;
+}
