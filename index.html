@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html onmousedown="return false">
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script type="text/javascript" src="./scripts.js"></script>
 	<link rel="stylesheet" href="./styles.css">
 </head>
 
-<body>
-	<h1>Bounce the ball to the goal! Click and drag to draw a line</h1>
-	<button id="start">Go!</button>
-	<div id="canvasSection">
+<body onmousedown="return false">
+	<h1 onmousedown="return false">Click and drag anywhere to draw a line and bounce the ball to victory!</h1>
+	<div onmousedown="return false" id="canvasSection">
 		<canvas class="canvas" id="canvas1"></canvas>
 		<canvas class="canvas" id="canvas2"></canvas>
+		<canvas class="canvas" id="canvas3"></canvas>
+	</div>
+	<div id="settings" onmousedown="return false">
+		<input type="color" id="trailColourForm">Trail colour:</input>
 	</div>
 </body>
 </html>

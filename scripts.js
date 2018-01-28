@@ -1,32 +1,50 @@
 var can;
 var con;
 var velocity = [Math.floor(Math.random()*5+1), Math.floor(Math.random()*5)];
+//velocity = [20, 0];
 var x = 0;
 var y = 0;
 var lastx=0;
 var lasty=0;
 var con2;
 var can2;
+var can3;
+var con3;
 var linesDrawn = [];
 var isDown = false;
 var lineStart = [0, 0];
 var lineFinish = [0, 0];
 var lines = [];
 var pointsCovered = [];
+var boost = false;
+var goal = [];
+var trailSettings = ["solid", '#00FF00', '0.2'];
+var goalSettings = [true];
 
 $(function(){
 	console.log('init fired');
 	can = $('#canvas1')[0];
 	can2 = $('#canvas2')[0];
+	can3 = $('#canvas3')[0];
 	can.height = window.innerHeight*0.8-4;
 	can.width = window.innerWidth-4;
 	can2.height = window.innerHeight*0.8-4;
-	can2.width = window.innerWidth-4;
+	can2.width = window.innerWidth-4;.8-4;
+	can3.height = window.innerHeight*0.8-4;
+	can3.width = window.innerWidth-4;
 	con = can.getContext('2d');
 	con2 = can2.getContext('2d');
-	setInterval(drawBall, 5);
+	con3 = can3.getContext('2d');
+	setInterval(drawBall, 15);
+	
+	goal = [(window.innerWidth-4)/2 + Math.floor(Math.random()*(window.innerWidth-4)/4), (window.innerHeight*0.8-4)/2 - Math.floor(Math.random()*(window.innerHeight*0.8-4)/4)]
 
-
+	con3.beginPath();
+	con3.arc(goal[0], goal[1], 10, 0, 2 * Math.PI);
+	con3.fillStyle = 'rgba(0, 255, 0, 1)';
+	con3.fill();
+	con3.closePath();
+	
 	can.onmousedown = function(e){
 		if(isDown){
 			return;
@@ -45,11 +63,30 @@ $(function(){
 		lineFinish[1] = e.y-this.offsetTop;
 		drawLine(lineStart, lineFinish);
 	}
+	
+	can.onkeydown = function(event){
+		console.log('space pressed');
+		if(event.whice == 32){
+			boost = true;
+		}
+	}
+	
+	can.onkeyup = function(event){
+		if(event.which == 32){
+			boost = false;
+		}
+	}
 
 });
 
 function drawLine(lineStart, lineFinish){
-	var newLine = [lineStart[0], lineStart[1], lineFinish[0], lineFinish[1]];
+	var newLine;
+	if(lineStart[0] <= lineFinish[0]){
+		newLine = [lineFinish[0], lineFinish[1], lineStart[0], lineStart[1]];
+	}
+	else{
+		newLine = [lineStart[0], lineStart[1], lineFinish[0], lineFinish[1]];
+	}
 	lines.push(newLine);
 	con2.beginPath();
 	con2.moveTo(lineStart[0], lineStart[1]);
@@ -76,13 +113,26 @@ function drawLine(lineStart, lineFinish){
 }
 
 function drawBall(){
+	var distanceToGoal = Math.floor(Math.sqrt(Math.pow(x-goal[0], 2) + Math.pow(y-goal[1], 2)));
+	console.log('Distance to goal: ' + distanceToGoal);
+	if(distanceToGoal < 10){
+		alert('You win! You found the goal!');
+		//if(localstorage)
+		window.location.reload();
+	}
+	if(velocity[0] > 6 || boost){
+		velocity[0]=6;
+	}
+	if(velocity[1] > 15 || boost){
+		velocity[1]=15;
+	}
 	if(x >= window.innerWidth-4){
-		velocity[0]-=0.0125;
+		//velocity[0]+=0.0125;
 		velocity[0]=-velocity[0];
 		x = window.innerWidth-4;
 	}
 	else if(x < 0){
-		velocity[0]+=0.0125;
+		//velocity[0]+=0.0125;
 		velocity[0]=-velocity[0];
 		x=0;
 	}
@@ -95,7 +145,12 @@ function drawBall(){
 		y=0;
 		velocity[1]=-velocity[1];
 	}
-	velocity[1] += 0.0125;
+	//if(y < (window.innerHeight*0.8-4)/2){
+		velocity[1] += 0.125;
+	//}
+	//else{
+	//	velocity[1] -= 0.025;
+	//}
 	con.save();
 	con.globalCompositeOperation = 'destination-out';
 	con.beginPath();
@@ -122,7 +177,11 @@ function drawBall(){
 			//travelling -x and hits top of line, rotate 2pi-2theta
 			//travelling +x and hits bottom of line, rotate 2pi-2theta
 			//travelling -x and hits bottom of line, rotate 2pi+2theta
-			var bounceAngle = 2*findVectorAngle([velocity[0], velocity[1]], [lines[i][0]-lines[i][2], lines[i][1]-lines[i][3]]);
+			var bounceAngle = findVectorAngle([velocity[0], velocity[1]], [lines[i][0]-lines[i][2], lines[i][1]-lines[i][3]]);
+			// if(bounceAngle < Math.PI/4){
+				// bounceAngle = Math.PI/2-bounceAngle;
+			// }
+			bounceAngle*=2;
 			if(velocity[0] > 0){
 				if(velocity[1] > 0){
 					bounceAngle = 2*Math.PI - bounceAngle;
@@ -137,6 +196,14 @@ function drawBall(){
 				}
 				else{
 					bounceAngle = 2*Math.PI - bounceAngle;
+				}
+			}
+			for(var ii = 0; ii < 2; ii++){
+				if(velocity[ii]>0){
+					velocity[ii]++;
+				}
+				else{
+					velocity[ii]--;
 				}
 			}
 			var oldVel = velocity;
@@ -161,6 +228,11 @@ function findVectorAngle(velocityVector, lineVector){
 	var cosTheta = dotProduct/(vectorAMag*vectorBMag);
 	var theta = Math.acos(cosTheta);
 	console.log('Angle: ' + theta);
+	// if(theta < 0.71 || theta > -0.71 || theta < 2.4){
+		// console.log('Throughbug found, changing angle');
+		// theta -= Math.PI/2;
+		// console.log('New angle: ' + theta);
+	// }
 	return theta;
 }
 
