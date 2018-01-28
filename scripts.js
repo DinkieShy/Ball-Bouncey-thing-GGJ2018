@@ -67,8 +67,8 @@ $(function(){
 		isDown = true;
 	}
 	
-	can.touchstart = function(e){
-		e.preventDefault();
+	can.touchstart = function(event){
+		event.preventDefault();
 		if(isDown){
 			return;
 		}
@@ -77,8 +77,8 @@ $(function(){
 		isDown = true;
 	}
 
-	can.touchend = function(e){
-		e.preventDefault();
+	can.touchend = function(event){
+		event.preventDefault();
 		if(!isDown){
 			return;
 		}
@@ -100,7 +100,7 @@ $(function(){
 	
 	can.onkeydown = function(event){
 		console.log('space pressed');
-		if(event.whice == 32){
+		if(event.which == 32){
 			boost = true;
 		}
 	}
