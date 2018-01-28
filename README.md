@@ -10,7 +10,7 @@ Feel free to fork the project, especially if you want to see how vectors and tri
 
 ======TO DO LIST====== (No particular order)
 
--Ability to remove lines
--Path validation to avoid glitching through lines
--Clean code
--Comment code
+Ability to remove lines
+Path validation to avoid glitching through lines
+Clean code
+Comment code
