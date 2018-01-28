@@ -20,6 +20,11 @@ var boost = false;
 var goal = [];
 var trailSettings = ["solid", '#000000', '0.2'];
 var goalSettings = [true];
+var ballColourForm;
+var goalColourForm;
+var lineColourForm;
+var trailColourForm;
+var trailOpacityForm;
 
 $(function(){
 	console.log('init fired');
@@ -36,16 +41,50 @@ $(function(){
 	con2 = can2.getContext('2d');
 	con3 = can3.getContext('2d');
 	
-	var trailColourForm = $('#trailColourForm')[0];
+	ballColourForm = $('#ballColourForm')[0];
+	lineColourForm = $('#lineColourForm')[0];
+	goalColourForm = $('#goalColourForm')[0];
+	trailColourForm = $('#trailColourForm')[0];
+	
+	goalColourForm.value = '#00FF00';
+	ballColourForm.value = '#000000';
+	lineColourForm.value = '#FF0000';
+	
+	if(localStorage){
+		goalColourForm.value = JSON.parse(localStorage.getItem("goalColour"));
+		trailSettings[1] = JSON.parse(localStorage.getItem('trailColour'));
+		trailSettings[2] = JSON.parse(localStorage.getItem('trailOpacity'));
+		ballColourForm.value = JSON.parse(localStorage.getItem('ballColour'));
+		lineColourForm.value = JSON.parse(localStorage.getItem('lineColour'));
+	}
+	
+	lineColourForm.onchange = function(){
+		localStorage.setItem('lineColour', JSON.stringify(lineColourForm.value));
+	}
+	
+	ballColourForm.onchange = function(){
+		localStorage.setItem('ballColour', JSON.stringify(ballColourForm.value));
+	}
+	
+	goalColourForm.onchange = function(){
+		localStorage.setItem("goalColour", JSON.stringify(goalColourForm.value));
+		con3.beginPath();
+		con3.arc(goal[0], goal[1], 10, 0, 2 * Math.PI);
+		con3.fillStyle = goalColourForm.value;
+		con3.fill();
+		con3.closePath();
+	}
+	
 	console.log(trailColourForm.value);
 	trailColourForm.onchange = function(){
 		trailSettings[1] = trailColourForm.value;
+		localStorage.setItem('trailColour', JSON.stringify(trailSettings[1]));
 	}
 	
-	var trailOpacityForm = $('#trailOpacityForm')[0];
+	trailOpacityForm = $('#trailOpacityForm')[0];
 	trailOpacityForm.onchange = function(){
 		trailSettings[2] = trailOpacityForm.value;
-		con2.globalAlpha = trailSettings[2];
+		localStorage.setItem('trailOpacity', JSON.stringify(trailSettings[2]));
 	}
 	
 	setInterval(drawBall, 15);
@@ -53,7 +92,7 @@ $(function(){
 	goal = [(window.innerWidth-4)/2 + Math.floor(Math.random()*(window.innerWidth-4)/4), (window.innerHeight*0.8-4)/2 - Math.floor(Math.random()*(window.innerHeight*0.8-4)/4)]
 	con3.beginPath();
 	con3.arc(goal[0], goal[1], 10, 0, 2 * Math.PI);
-	con3.fillStyle = 'rgba(0, 255, 0, 1)';
+	con3.fillStyle = goalColourForm.value;
 	con3.fill();
 	con3.closePath();
 	
@@ -124,7 +163,7 @@ function drawLine(lineStart, lineFinish){
 	con3.beginPath();
 	con3.moveTo(lineStart[0], lineStart[1]);
 	con3.lineTo(lineFinish[0], lineFinish[1]);
-	con3.strokeStyle = '#FF0000';
+	con3.strokeStyle = lineColourForm.value;
 	con3.stroke();
 	con3.closePath();
 	var grad = (lineFinish[1]-lineStart[1])/(lineFinish[0]-lineStart[0]);
@@ -149,7 +188,7 @@ function drawBall(){
 	var distanceToGoal = Math.floor(Math.sqrt(Math.pow(x-goal[0], 2) + Math.pow(y-goal[1], 2)));
 	//console.log('Distance to goal: ' + distanceToGoal);
 	if(distanceToGoal < 10){
-		alert('You win! You found the goal!');
+		alert('You win! That\'s numberwang!');
 		//if(localstorage)
 		window.location.reload();
 	}
@@ -194,6 +233,7 @@ function drawBall(){
 	con2.moveTo(lastx, lasty);
 	con2.lineTo(x, y);
 	con2.strokeStyle = trailSettings[1];
+	con2.globalAlpha = trailSettings[2];
 	con2.stroke();
 	con2.closePath();
 	lastx=x;
@@ -249,6 +289,7 @@ function drawBall(){
 	y += velocity[1];
 	con.beginPath();
 	con.arc(x, y, 10, 0, Math.PI*2);
+	con.fillStyle = ballColourForm.value;
 	con.fill();
 	con.closePath();
 };
