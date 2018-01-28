@@ -45,7 +45,6 @@ $(function(){
 	var trailOpacityForm = $('#trailOpacityForm')[0];
 	trailOpacityForm.onchange = function(){
 		trailSettings[2] = trailOpacityForm.value;
-		console.log(trailSettings[2]);
 		con2.globalAlpha = trailSettings[2];
 	}
 	
@@ -67,7 +66,7 @@ $(function(){
 		isDown = true;
 	}
 	
-	can.touchstart = function(event){
+	can.touchstart = function(){
 		event.preventDefault();
 		if(isDown){
 			return;
@@ -77,7 +76,7 @@ $(function(){
 		isDown = true;
 	}
 
-	can.touchend = function(event){
+	can.touchend = function(){
 		event.preventDefault();
 		if(!isDown){
 			return;
