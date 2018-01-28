@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html onmousedown="return false">
+<html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script type="text/javascript" src="./scripts.js"></script>
 	<link rel="stylesheet" href="./styles.css">
 </head>
 
-<body onmousedown="return false">
+<body>
 	<h1 onmousedown="return false">Click and drag anywhere to draw a line and bounce the ball to victory!</h1>
-	<div onmousedown="return false" id="canvasSection">
+	<div id="canvasSection">
 		<canvas class="canvas" id="canvas1"></canvas>
 		<canvas class="canvas" id="canvas2"></canvas>
 		<canvas class="canvas" id="canvas3"></canvas>
 	</div>
-	<div id="settings" onmousedown="return false">
-		<input type="color" id="trailColourForm">Trail colour:</input>
+	<div id="settings">
+	<ul>
+		<li>Trail colour:<input type="color" id="trailColourForm"></input></li>
+		<li>Trail opacity:<input type="range" id="trailOpacityForm" min="0" max="1" step="0.1"></input></li>
+	</ul>
 	</div>
 </body>
 </html>

@@ -18,7 +18,7 @@ var lines = [];
 var pointsCovered = [];
 var boost = false;
 var goal = [];
-var trailSettings = ["solid", '#00FF00', '0.2'];
+var trailSettings = ["solid", '#000000', '0.2'];
 var goalSettings = [true];
 
 $(function(){
@@ -35,10 +35,23 @@ $(function(){
 	con = can.getContext('2d');
 	con2 = can2.getContext('2d');
 	con3 = can3.getContext('2d');
+	
+	var trailColourForm = $('#trailColourForm')[0];
+	console.log(trailColourForm.value);
+	trailColourForm.onchange = function(){
+		trailSettings[1] = trailColourForm.value;
+	}
+	
+	var trailOpacityForm = $('#trailOpacityForm')[0];
+	trailOpacityForm.onchange = function(){
+		trailSettings[2] = trailOpacityForm.value;
+		console.log(trailSettings[2]);
+		con2.globalAlpha = trailSettings[2];
+	}
+	
 	setInterval(drawBall, 15);
 	
 	goal = [(window.innerWidth-4)/2 + Math.floor(Math.random()*(window.innerWidth-4)/4), (window.innerHeight*0.8-4)/2 - Math.floor(Math.random()*(window.innerHeight*0.8-4)/4)]
-
 	con3.beginPath();
 	con3.arc(goal[0], goal[1], 10, 0, 2 * Math.PI);
 	con3.fillStyle = 'rgba(0, 255, 0, 1)';
@@ -53,7 +66,28 @@ $(function(){
 		lineStart[1] = e.y-this.offsetTop;
 		isDown = true;
 	}
+	
+	can.touchstart = function(e){
+		preventDefault();
+		if(isDown){
+			return;
+		}
+		lineStart[0] = e.x-this.offsetLeft;
+		lineStart[1] = e.y-this.offsetTop;
+		isDown = true;
+	}
 
+	can.touchend = function(e){
+		preventDefault();
+		if(!isDown){
+			return;
+		}
+		isDown = false;
+		lineFinish[0] = e.x-this.offsetLeft;
+		lineFinish[1] = e.y-this.offsetTop;
+		drawLine(lineStart, lineFinish);
+	}
+	
 	can.onmouseup = function(e){
 		if(!isDown){
 			return;
@@ -88,12 +122,12 @@ function drawLine(lineStart, lineFinish){
 		newLine = [lineStart[0], lineStart[1], lineFinish[0], lineFinish[1]];
 	}
 	lines.push(newLine);
-	con2.beginPath();
-	con2.moveTo(lineStart[0], lineStart[1]);
-	con2.lineTo(lineFinish[0], lineFinish[1]);
-	con2.strokeStyle = '#FF0000';
-	con2.stroke();
-	con2.closePath();
+	con3.beginPath();
+	con3.moveTo(lineStart[0], lineStart[1]);
+	con3.lineTo(lineFinish[0], lineFinish[1]);
+	con3.strokeStyle = '#FF0000';
+	con3.stroke();
+	con3.closePath();
 	var grad = (lineFinish[1]-lineStart[1])/(lineFinish[0]-lineStart[0]);
 	var angle = (-1)/Math.atan(grad);
 	if(lineStart[0] >= lineFinish[0]){
@@ -114,7 +148,7 @@ function drawLine(lineStart, lineFinish){
 
 function drawBall(){
 	var distanceToGoal = Math.floor(Math.sqrt(Math.pow(x-goal[0], 2) + Math.pow(y-goal[1], 2)));
-	console.log('Distance to goal: ' + distanceToGoal);
+	//console.log('Distance to goal: ' + distanceToGoal);
 	if(distanceToGoal < 10){
 		alert('You win! You found the goal!');
 		//if(localstorage)
@@ -160,7 +194,7 @@ function drawBall(){
 	con2.beginPath();
 	con2.moveTo(lastx, lasty);
 	con2.lineTo(x, y);
-	con2.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+	con2.strokeStyle = trailSettings[1];
 	con2.stroke();
 	con2.closePath();
 	lastx=x;
