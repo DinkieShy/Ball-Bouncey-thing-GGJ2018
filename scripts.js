@@ -45,6 +45,7 @@ $(function(){
 	lineColourForm = $('#lineColourForm')[0];
 	goalColourForm = $('#goalColourForm')[0];
 	trailColourForm = $('#trailColourForm')[0];
+	trailOpacityForm = $('#trailOpacityForm')[0];
 	
 	goalColourForm.value = '#00FF00';
 	ballColourForm.value = '#000000';
@@ -53,7 +54,9 @@ $(function(){
 	if(localStorage){
 		goalColourForm.value = JSON.parse(localStorage.getItem("goalColour"));
 		trailSettings[1] = JSON.parse(localStorage.getItem('trailColour'));
+		trailColourForm.value = trailSettings[1];
 		trailSettings[2] = JSON.parse(localStorage.getItem('trailOpacity'));
+		trailOpacityForm.value = trailSettings[2];
 		ballColourForm.value = JSON.parse(localStorage.getItem('ballColour'));
 		lineColourForm.value = JSON.parse(localStorage.getItem('lineColour'));
 	}
@@ -81,7 +84,7 @@ $(function(){
 		localStorage.setItem('trailColour', JSON.stringify(trailSettings[1]));
 	}
 	
-	trailOpacityForm = $('#trailOpacityForm')[0];
+	
 	trailOpacityForm.onchange = function(){
 		trailSettings[2] = trailOpacityForm.value;
 		localStorage.setItem('trailOpacity', JSON.stringify(trailSettings[2]));
