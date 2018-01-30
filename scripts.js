@@ -220,43 +220,41 @@ function drawBall(){
 		y=0;
 		velocity[1]=-velocity[1];
 	}
-	//if(y < (window.innerHeight*0.8-4)/2){
-		velocity[1] += 0.125;
-	//}
-	//else{
-	//	velocity[1] -= 0.025;
-	//}
-	con.save();
-	con.globalCompositeOperation = 'destination-out';
-	con.beginPath();
-	con.arc(lastx, lasty, 11, 0, 2 * Math.PI, false);
-	con.fill();
-	con.restore();
-	con2.beginPath();
-	con2.moveTo(lastx, lasty);
+	velocity[1] += 0.125; 							//Apply acceleration due to gravity
+	
+	con.clearRect(0, 0, window.innerWidth-1, window.innerHeight*0.8-4);	//Clear the canvas to draw the ball in it's new location
+	 									//I can just clear the entire canvas as the ball is on
+										//a separate canvas to lines, the goal and the trail
+	//con.save();
+	//con.globalCompositeOperation = 'destination-out';
+	//con.beginPath();
+	//con.arc(lastx, lasty, 11, 0, 2 * Math.PI, false);
+	//con.fill();
+	//con.restore();
+	con2.beginPath();							//Draw the trail from the ball's last position to the
+	con2.moveTo(lastx, lasty);						//ball's current position
 	con2.lineTo(x, y);
-	con2.strokeStyle = trailSettings[1];
-	con2.globalAlpha = trailSettings[2];
+	con2.strokeStyle = trailSettings[1];					//Getting settings from an array to be up to date with
+	con2.globalAlpha = trailSettings[2];					//settings from the local storage
 	con2.stroke();
 	con2.closePath();
-	lastx=x;
-	lasty=y;
+	lastx=x;								//Store the current position as the last position ready
+	lasty=y;								//for the next iteration
 	nextx = x + velocity[0];
 	nexty = y + velocity[1];
+										//Go through each line the user's drawn and check if
+										//the line between the ball's current and next position
+										//crosses over any
 	for(var i = 0; i < lines.length; i++){
 		if(intersects(lines[i][0], lines[i][1], lines[i][2], lines[i][3], x, y, nextx, nexty)){
-			console.log('Crossover!');
 			var lineGrad = Math.abs(lines[i][1]-lines[i][3])/(lines[i][0]-lines[i][2]);
 			var lineAngle = (-1)/Math.atan(lineGrad);
 			console.log('Reflect with angle ' + lineAngle);
-			//travelling +x and hits top of line, rotate 2pi+2theta
-			//travelling -x and hits top of line, rotate 2pi-2theta
-			//travelling +x and hits bottom of line, rotate 2pi-2theta
-			//travelling -x and hits bottom of line, rotate 2pi+2theta
+										//travelling +x and hits top of line, rotate 2pi+2theta
+										//travelling -x and hits top of line, rotate 2pi-2theta
+										//travelling +x and hits bottom of line, rotate 2pi-2theta
+										//travelling -x and hits bottom of line, rotate 2pi+2theta
 			var bounceAngle = findVectorAngle([velocity[0], velocity[1]], [lines[i][0]-lines[i][2], lines[i][1]-lines[i][3]]);
-			// if(bounceAngle < Math.PI/4){
-				// bounceAngle = Math.PI/2-bounceAngle;
-			// }
 			bounceAngle*=2;
 			if(velocity[0] > 0){
 				if(velocity[1] > 0){
@@ -288,9 +286,9 @@ function drawBall(){
 			velocity[1] = oldVel[0]*Math.sin(bounceAngle)+oldVel[1]*Math.cos(bounceAngle);
 		}
 	}
-	x += velocity[0];
-	y += velocity[1];
-	con.beginPath();
+	x += velocity[0];							//Move the ball once the velocity has been updated
+	y += velocity[1];							//Uses v = u + at from kinematics
+	con.beginPath();							//Then draw the ball in it's new location
 	con.arc(x, y, 10, 0, Math.PI*2);
 	con.fillStyle = ballColourForm.value;
 	con.fill();
