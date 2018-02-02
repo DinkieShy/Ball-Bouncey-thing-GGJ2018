@@ -1,11 +1,14 @@
-var can;
-var con;
-var velocity = [Math.floor(Math.random()*5+1), Math.floor(Math.random()*5)];
-//velocity = [20, 0];
-var x = 0;
+var velocity = [Math.floor(Math.random()*5+1), Math.floor(Math.random()*5)]; //Random velocity
+//Velocity stored as an array of [speed in x direction, speed in y direction]
+var x = 0; //Start position set to (0, 0). (This is the top-left corner)
 var y = 0;
 var lastx=0;
 var lasty=0;
+//3 canvases are used. One for the ball, another for the trail and a third for the lines and goal
+//This is because the ball needs to be erased, meaning it must be on a separate canvas
+//The trail's opacity must also be changed independently from everything else, meaning it also needs it's own canvas
+var can;
+var con;
 var con2;
 var can2;
 var can3;
@@ -26,7 +29,8 @@ var lineColourForm;
 var trailColourForm;
 var trailOpacityForm;
 
-$(function(){
+$(function(){ //init function. The page will break if Jquery can't find the HTML elements
+	//To counter this, any operations that require HTML elements aren't performed until the HTML has loaded
 	console.log('init fired');
 	can = $('#canvas1')[0];
 	can2 = $('#canvas2')[0];
@@ -90,14 +94,18 @@ $(function(){
 		localStorage.setItem('trailOpacity', JSON.stringify(trailSettings[2]));
 	}
 	
-	setInterval(drawBall, 15);
+	setInterval(drawBall, 15); //This command makes the entire game work. Every [15] milliseconds, run the script to advance a time period
+	//[15] can be substituted for a smaller number to 'speed up time'
 	
 	goal = [(window.innerWidth-4)/2 + Math.floor(Math.random()*(window.innerWidth-4)/4), (window.innerHeight*0.8-4)/2 - Math.floor(Math.random()*(window.innerHeight*0.8-4)/4)]
+	//the position of the goal is random in the top right quarter of the screen
 	con3.beginPath();
 	con3.arc(goal[0], goal[1], 10, 0, 2 * Math.PI);
 	con3.fillStyle = goalColourForm.value;
 	con3.fill();
 	con3.closePath();
+	
+	//Adding event listeners to draw lines on the canvas
 	
 	can.onmousedown = function(e){
 		if(isDown){
@@ -157,7 +165,15 @@ $(function(){
 function drawLine(lineStart, lineFinish){
 	var newLine;
 	if(lineStart[0] <= lineFinish[0]){
-		newLine = [lineFinish[0], lineFinish[1], lineStart[0], lineStart[1]];
+		//If the line is drawn left to right
+		if(lineStart[1] <= lineFinish[1]){
+			//if the line is drawn top to bottom
+			newLine = [lineFinish[0], lineFinish[1], lineStart[0], lineStart[1]];
+		}
+		else{
+			//if the line is drawn bottom to top
+			newLine = [lineFinish[0], lineStart[1], lineStart[0], lineFinish[1]];
+		}
 	}
 	else{
 		newLine = [lineStart[0], lineStart[1], lineFinish[0], lineFinish[1]];
